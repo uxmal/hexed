@@ -11,6 +11,7 @@ namespace hexed
     {
         private byte[] bytes;
         private int position;
+        private string filename;
 
         public bool IsDirty { get; set; }
 
@@ -28,15 +29,27 @@ namespace hexed
             {
                 if (PromptForSaving())
                 {
-                    Save();
+                    Save(new string[0]);
                 }
             }
 
         }
 
-        private void Save()
+        private void Save(string[] cmd)
         {
-            throw new NotImplementedException();
+            if (string.IsNullOrEmpty(filename))
+            {
+                Console.WriteLine("No file has been loaded");
+                return;
+            }
+            try
+            {
+                File.WriteAllBytes(filename, this.bytes);
+            }
+            catch
+            {
+                Console.WriteLine("An error occurred while writing to {0}.", filename);
+            }
         }
 
         private bool PromptForSaving()
@@ -57,6 +70,10 @@ namespace hexed
             else if (cmd[0] == "w")
             {
                 WriteBytes(cmd);
+            }
+            else if (cmd[0] == "s")
+            {
+                Save(cmd);
             }
             else
             {
@@ -83,6 +100,10 @@ namespace hexed
 
         private void Dump(string[] cmd)
         {
+            if (cmd.Length > 1)
+            {
+                position = Convert.ToInt32(cmd[1], 16);
+            }
             for (int row = 0; row < 16 && position < bytes.Length; ++row)
             {
                 DumpLine();
@@ -136,6 +157,7 @@ namespace hexed
             {
                 this.bytes = File.ReadAllBytes(cmd[1]);
                 this.position = 0;
+                this.filename = cmd[1];
                 Console.WriteLine("{0} bytes loaded", bytes.Length);
             }catch
             {
