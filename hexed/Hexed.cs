@@ -54,9 +54,30 @@ namespace hexed
             {
                 Dump(cmd);
             }
+            else if (cmd[0] == "w")
+            {
+                WriteBytes(cmd);
+            }
             else
             {
                 Console.WriteLine("Unknown command '{0}'.", cmd[0]);
+            }
+        }
+
+        private void WriteBytes(string[] cmd)
+        {
+            if (cmd.Length < 3)
+            {
+                Console.WriteLine("w command expects at least a position and some byte values.");
+                return;
+            }
+            var writePosition = Convert.ToInt32(cmd[1], 16);
+            for (int i = 2; i < cmd.Length; i = i + 1)
+            {
+                var stringByte = cmd[i];
+                var b = Convert.ToInt32(stringByte, 16);
+                bytes[writePosition] = (byte)b;
+                writePosition = writePosition + 1;
             }
         }
 
