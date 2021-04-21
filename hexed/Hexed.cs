@@ -10,6 +10,7 @@ namespace hexed
     class Hexed
     {
         private byte[] bytes;
+        private int position;
 
         public bool IsDirty { get; set; }
 
@@ -49,10 +50,36 @@ namespace hexed
             {
                 Load(cmd);
             }
+            else if (cmd[0] == "d")
+            {
+                Dump(cmd);
+            }
             else
             {
                 Console.WriteLine("Unknown command '{0}'.", cmd[0]);
             }
+        }
+
+        private void Dump(string[] cmd)
+        {
+            for (int row = 0; row < 16 && position < bytes.Length; ++row)
+            {
+                DumpLine();
+            }
+        }
+
+        private void DumpLine()
+        {
+            var stop = position + 16;
+            if (stop > bytes.Length)
+                stop = bytes.Length;
+            Console.Write("{0:X4} ", position);
+            for (int i = position; i < stop; i = i +1)
+            {
+                Console.Write("{0:X2} ", (int)bytes[i]);
+            }
+            Console.WriteLine();
+            position = stop;
         }
 
         // Loading a file.
@@ -67,6 +94,7 @@ namespace hexed
             try
             {
                 this.bytes = File.ReadAllBytes(cmd[1]);
+                this.position = 0;
                 Console.WriteLine("{0} bytes loaded", bytes.Length);
             }catch
             {
