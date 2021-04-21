@@ -78,6 +78,26 @@ namespace hexed
             {
                 Console.Write("{0:X2} ", (int)bytes[i]);
             }
+            if (stop < position + 16)
+            {
+                var blanks = position + 16 - stop;
+                for (int i = 0; i < blanks; i = i + 1)
+                {
+                    Console.Write("   ");
+                }
+            }
+            for (int i = position; i < stop; i = i + 1)
+            {
+                var b = bytes[i];
+                if (0x20 <= b && b < 0x80)
+                {
+                    Console.Write((char)b);
+                }
+                else
+                {
+                    Console.Write('.');
+                }
+            }
             Console.WriteLine();
             position = stop;
         }
